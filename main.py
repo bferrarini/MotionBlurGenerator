@@ -42,10 +42,10 @@ def parse_args():
     return parser.parse_args()
 
 # TEST
-# extract -v /home/main/Documents/GX010091.MP4 
-# extract -v /home/main/Documents/GX010091.MP4 --fill-the-gaps
-# extract -v /home/main/Documents/GX010091.MP4 -o /home/main/Documents/GX010091_GAPS.CSV  
-# extract -v /home/main/Documents/GX010091.MP4 -o /home/main/Documents/GX010091_FULL.CSV --fill-the-gaps
+# gps-v /home/main/Documents/GX010091.MP4 
+# gps -v /home/main/Documents/GX010091.MP4 --fill-the-gaps
+# gps -v /home/main/Documents/GX010091.MP4 -o /home/main/Documents/GX010091_GAPS.CSV  
+# gps -v /home/main/Documents/GX010091.MP4 -o /home/main/Documents/GX010091_FULL.CSV --fill-the-gaps
 def command_gps_extract(args):
     video_fn = args.video_fn
     gps_csv = args.output
