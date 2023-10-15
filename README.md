@@ -8,7 +8,7 @@ Usage:
 python main.py gps -v /home/main/Documents/GX010091.MP4 -o /home/main/Documents/GX010091_GAPS.CSV
 ```
 The resolution of GPS might be lower than FPS. This happens, for example, for 240FPS videos.
-To fill the gaps between frames add the flag --fill-the-gaps
+To fill the gaps between frames add the flag **--fill-the-gaps**:
 
 ```
 python main.py gps -v /home/main/Documents/GX010091.MP4 -o /home/main/Documents/GX010091_GAPS.CSV --fill-the-gaps
@@ -35,8 +35,6 @@ idx,seq,true_gps,frameId,label,latitude,longitude,elevation,speed,pos_diluition,
 14,S0,0,14,frame_000014,44.942005,10.6758678,19.463,17.99,1.35,2023-10-03 12:53:46.814726,2023,10,3,12,53,46,814726
 15,S0,0,15,frame_000015,44.942005,10.6758678,19.463,17.99,1.35,2023-10-03 12:53:46.818896,2023,10,3,12,53,46,818896
 ```
+## extract: Extracting Frames From a Video
 
-
-
-## gpmf
-All credits to [pygmf](https://github.com/alexis-mignon/pygpmf)
+## avg-blur: Creating a Blurred Datasets
