@@ -2,7 +2,7 @@
 main.py takes three commands: gps, extract, avg-blur
 
 # gps: extracting GPS coordinates from a video
-Please note that this function incorporates the code from [pygmf](https://github.com/alexis-mignon/pygpmf).<bf/>
+Please note that this function incorporates the code from [pygmf](https://github.com/alexis-mignon/pygpmf).<br/>
 Usage:
 ```
 python main.py gps -v /home/main/Documents/GX010091.MP4 -o /home/main/Documents/GX010091_GAPS.CSV
