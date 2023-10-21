@@ -1,5 +1,5 @@
 import argparse
-from utility import GpsExtractor, Unspooler
+from utility import GpsExtractor, Unspooler, prune_dataset
 from blurLib import AverageSytheticBlur
 import os
 
@@ -35,9 +35,18 @@ def parse_args():
     blur_parser.add_argument("-o", "--out-folder", dest="output", type=str, required=True, help="Destination Folder for extracted frames.")
     blur_parser.add_argument("-b", "--blur-intesities", dest="nFrames", type=int, nargs='+', required=True, help="The number of frames to average.")
     
-    # All-in-One
-    all_parser = subparsers.add_parser("all")
-    all_parser.add_argument("-v", "--video-file", help="Input Video File to blur.")
+    # prune
+    # It is used to create a dataset with lowwer frame rate and then, fewer places.
+    # The original framerate of 240 FPS might be to dense to produce significant results on relativeli short traversal due to large number of possible matches for a query.
+
+    all_parser = subparsers.add_parser("prune")
+    all_parser.add_argument("-d", "--dataset-folder", dest="img_dataset_folder", help="Folder where the 240FPS images are stored.")
+    all_parser.add_argument("-o", "--out-folder", dest="output", type=str, required=True, help="Destination Folder for extracted frames.")
+    all_parser.add_argument("-f", "--offset", dest="offset", type=int, required=False, default=0 ,help="The number initial frames to skip. The deafult is 0.")
+    all_parser.add_argument("-t", "--tail", dest="tail", type=int, required=False, default=0 ,help="The number terminal frames to skip. The deafult is 0.")
+    all_parser.add_argument("-s", "--sfps", dest="source_fps", type=int, required=False, default=240 ,help="Source FPS. The deafult is 240.")
+    all_parser.add_argument("-r", "--fps", dest="fps", type=int, required=True ,help="Target FPS.")
+    all_parser.add_argument("-O", "--override", dest="override", action="store_true" ,help="Override the output filder's content.")
 
     return parser.parse_args()
 
@@ -111,11 +120,19 @@ def command_blur_dataset(args):
     blurMachine.blurDataset(outdir = args.output, nFrames=args.nFrames)
     print(f"\tFind blurred images in {args.output}")
 
+# TEST
+# prune -v /home/main/Documents/GX010091.MP4 -o /home/main/Documents/GX010091_REF --fps=1 --sfps=240 --override 
+def command_prune_dataset(args):
+    prune_dataset(data_dir=args.img_dataset_folder, out_dir=args.output, 
+                  source_FPS=args.source_fps, target_FPS=args.fps, 
+                  offset=args.offset, tail=args.tail, 
+                  override=args.override, file_filter= ".*\.(jpg|png)")
 
 COMMANDS = {
     "gps": command_gps_extract,
     "extract": command_frame_extract,
     "avg-blur": command_blur_dataset,
+    "prune": command_prune_dataset,
 }
 
 
