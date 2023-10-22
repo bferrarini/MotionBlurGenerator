@@ -88,7 +88,7 @@ def command_frame_extract(args):
 
     #audio must be removed otherwise opencv cannot unspoil the video
     if force_strip_audio or not os.path.exists(fn_mute):
-        print(f"Strpping the audio from {video_fn}")
+        print(f"Stripping the audio from {video_fn}")
         print(f"Writing the file: {fn_mute}")
         Unspooler.stripAudio(video_fn, fn_mute)
         fn = fn_mute

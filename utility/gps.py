@@ -107,7 +107,7 @@ class GpsExtractor():
     def writeToCSV(self, outfile):
         first_point = self.points[0]
         header = list(first_point.keys())
-        with open(outfile, 'w') as csvfile: 
+        with open(outfile, 'w', newline='') as csvfile: 
             writer = csv.DictWriter(csvfile, fieldnames = header) 
             writer.writeheader() 
             writer.writerows(self.points) 
