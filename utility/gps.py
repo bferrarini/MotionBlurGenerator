@@ -67,7 +67,13 @@ class GpsExtractor():
                 idx += 1
             seg += 1
 
-        if fill_the_gaps:
+        self.points.sort(key=lambda x: int(x['frameId']), reverse=False)
+        idx = 0
+        for pt in self.points:
+            pt['idx'] = idx
+            idx += 1
+
+        if fill_the_gaps:            
             self._fill_the_gaps()
 
     def _fill_the_gaps(self):
@@ -75,7 +81,9 @@ class GpsExtractor():
         idx = 0
         new_frameId = None
         for point in self.points:
-            #pt = copy.copy(point)
+            if int(point['frameId']) > 510 and int(point['frameId']) < 600:
+                #print(point['frameId'])
+                pass
             if new_frameId is None:
                 new_frameId = int(point['frameId'])
             if new_frameId < int(point['frameId']):
@@ -97,6 +105,7 @@ class GpsExtractor():
                     new_frameId += 1
 
             pt = copy.copy(point)
+            pt['idx'] = str(idx)
             new_pts.append(pt)
             idx += 1
             new_frameId += 1
