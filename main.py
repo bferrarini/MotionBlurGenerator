@@ -121,7 +121,7 @@ def command_blur_dataset(args):
     print(f"\tFind blurred images in {args.output}")
 
 # TEST
-# prune -v /home/main/Documents/GX010091.MP4 -o /home/main/Documents/GX010091_REF --fps=1 --sfps=240 --override 
+# prune -d /home/main/Documents/GX010091.MP4 -o /home/main/Documents/GX010091_REF --fps=1 --sfps=240 --override 
 def command_prune_dataset(args):
     prune_dataset(data_dir=args.img_dataset_folder, out_dir=args.output, 
                   source_FPS=args.source_fps, target_FPS=args.fps, 
