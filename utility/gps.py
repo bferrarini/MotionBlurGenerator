@@ -8,6 +8,7 @@ import math
 import os
 from collections import OrderedDict
 from utility import Unspooler
+import folium
 
 
 class GpsExtractor():
@@ -132,6 +133,20 @@ class GpsExtractor():
             row = ",".join(data)
             print(row)
 
+    def points_as_list(self):
+        points = [(pt['latitude'], pt['longitude']) for pt in self.points]
+        return points
+
+    def visualize_on_map(self, out_fn):
+        map_center = self.points[0]
+        map_osm = folium.Map(location=(map_center['latitude'], map_center['longitude']), zoom_start=15)
+        start = (self.points[0]['latitude'], self.points[0]['longitude'])
+        end = (self.points[-1]['latitude'], self.points[-1]['longitude'])
+        for point in self.points:
+            color = "red" if point["true_gps"] == "1" else "blue"
+            folium.Circle((point['latitude'], point['longitude']), radius=1, color = color).add_to(map_osm)
+            #folium.Marker((point['latitude'], point['longitude'])).add_to(map_osm)
+        map_osm.save(out_fn)        
 
         
     def _getFrameId(self, point, t0):
@@ -140,3 +155,49 @@ class GpsExtractor():
         return int(frame_id)
   
 
+class Visualizer():
+
+    def __init__(self):
+        self.colors = [
+                'red',
+                'blue',
+                'green',
+                'gray',
+                'darkred',
+                'lightred',
+                'orange',
+                'beige',
+                'darkgreen',
+                'lightgreen',
+                'darkblue',
+                'lightblue',
+                'purple',
+                'darkpurple',
+                'pink',
+                'cadetblue',
+                'lightgray',
+                'black'
+        ]
+
+        self.extractors = OrderedDict()
+
+    def append(self, label : str, gpsExtractor : GpsExtractor):
+        self.extractors[label] = gpsExtractor
+
+    def draw_map(self, to_file):
+        m = None
+        i = 0
+        for name, ex in self.extractors.items():
+            color = self.colors[i]
+            points = ex.points_as_list()
+            start = points[0]
+            end = points[-1]
+            if m is None:
+                map_center = points[0]
+                m = folium.Map(location=(start[0], start[1]), zoom_start=15)
+            folium.Marker((start[0], start[1]), color = color, tooltip=f"{name}:Start").add_to(m)
+            folium.Marker((end[0], end[1]), color = color, tooltip=f"{name}:End").add_to(m)
+            for j in range(1,len(points) - 1):
+                folium.Circle((points[j][0], points[j][1]), radius=1, color = color).add_to(m)
+            i += 1
+        m.save(to_file)  
