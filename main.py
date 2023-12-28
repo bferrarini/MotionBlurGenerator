@@ -58,7 +58,7 @@ def parse_args():
     loop_parser.add_argument("--blur-prefix", dest="bPrefix", type=str, default="AVGBLUR_B-", required=False, help="Fix the problem of potentially different namning convention of the blurred directories.")
     loop_parser.add_argument("--ref_gps", dest="ref_gps_file", type=str, required=True, help="GPS file for the reference traversal.")
     loop_parser.add_argument("--query_gps", dest="query_gps_file", type=str, required=True, help="GPS file for the query traversal.")
-    loop_parser.add_argument("--prune", dest="prune", type=bool, default="false", help="True means that the blurred datasets will be reduced.")
+    loop_parser.add_argument("--prune", dest="prune", type=bool, default=False, help="True means that the blurred datasets will be reduced.")
     loop_parser.add_argument("--prune_keep_every", dest="keep", type=int, default=240, help="Only qhen prune==True: Keeps 1 in prune_keep_every frames.")
     loop_parser.add_argument("--prune_offest", dest="prune_offest", type=int, default=0, help="Only qhen prune==True: starts pruning from prune_offest image.")
 
