@@ -58,6 +58,9 @@ def parse_args():
     loop_parser.add_argument("--blur-prefix", dest="bPrefix", type=str, default="AVGBLUR_B-", required=False, help="Fix the problem of potentially different namning convention of the blurred directories.")
     loop_parser.add_argument("--ref_gps", dest="ref_gps_file", type=str, required=True, help="GPS file for the reference traversal.")
     loop_parser.add_argument("--query_gps", dest="query_gps_file", type=str, required=True, help="GPS file for the query traversal.")
+    loop_parser.add_argument("--prune", dest="prune", type=bool, default="false", help="True means that the blurred datasets will be reduced.")
+    loop_parser.add_argument("--prune_keep_every", dest="keep", type=int, default=240, help="Only qhen prune==True: Keeps 1 in prune_keep_every frames.")
+    loop_parser.add_argument("--prune_offest", dest="prune_offest", type=int, default=0, help="Only qhen prune==True: starts pruning from prune_offest image.")
 
     return parser.parse_args()
 
@@ -140,7 +143,7 @@ def command_prune_dataset(args):
                   override=args.override, file_filter= ".*\.(jpg|png)")
 
 # TEST
-# loops -R D:\\datasets\\MotionBlur\\LUZZARA-03B_1FPS -B D:\\datasets\\MotionBlur\\LUZZARA-03A_BLURRED -o D:\\datasets\\MotionBlur\\LUZZARA-03AB --ref_gps=D:\\datasets\\MotionBlur\\LUZZARA-03A.csv --query_gps=D:\\datasets\\MotionBlur\\LUZZARA-03B.csv -b 80 120 240
+# loops -R D:\\datasets\\MotionBlur\\LUZZARA-03B_1FPS -B D:\\datasets\\MotionBlur\\LUZZARA-03A_BLURRED -o D:\\datasets\\MotionBlur\\LUZZARA-03AB_test --ref_gps=D:\\datasets\\MotionBlur\\LUZZARA-03A.csv --query_gps=D:\\datasets\\MotionBlur\\LUZZARA-03B.csv --prune=True --prune_keep_every=240 --prune_offset=0 -b 2 4 240
 def command_build_traversals(args):
     '''
     Copeis the imagtes and file to the reuired structure to run the experiments.
@@ -161,11 +164,15 @@ def command_build_traversals(args):
     # blur prefix
     bprefix = args.bPrefix
 
+    # PRUNING
+    
+
     if not os.path.exists(outDir):
         os.makedirs(outDir)
 
         
     for bl in bLevels:
+        print(f" * Working on {bl}")
         blSource = os.path.join(bDir, "{:s}{:03d}".format(bprefix, int(bl)))
         if os.path.exists(blSource) and os.path.isdir(blSource):
             loopDir = os.path.join(outDir, "{:03d}".format(int(bl)))
@@ -185,7 +192,7 @@ def command_build_traversals(args):
             for s,d in zip(source_files,destination_files):
                 shutil.copy(src = s, dst= d)
                 c += 1
-            print(f"{c} files copied from {rDir} to {target_reference}.")
+            print(f" # {c} files copied from {rDir} to {target_reference}.")
 
             target_query = os.path.join(loopDir, "query")
             if not os.path.exists(target_query):
@@ -193,14 +200,34 @@ def command_build_traversals(args):
 
             source_files = [os.path.join(blSource, f) for f in os.listdir(blSource) if re.search(".*\.(jpg|png)",f)]
             destination_files = [os.path.join(target_query, f) for f in os.listdir(blSource) if re.search(".*\.(jpg|png)",f)]
+
+            if args.prune:
+                skip = args.keep // bl
+                offset = args.prune_offest
+            else:
+                skip = 1
+                offset = 0
+
+#            c = 0
+#            for s,d in zip(source_files,destination_files):
+#                shutil.copy(src = s, dst= d)
+#                c += 1
+#            print(f"{c} files copied from {blSource} to {target_query}.")
+
             c = 0
-            for s,d in zip(source_files,destination_files):
+            for i in range(offset, len(source_files), skip):
+                s = source_files[i]
+                d = destination_files[i]
                 shutil.copy(src = s, dst= d)
                 c += 1
-            print(f"{c} files copied from {blSource} to {target_query}.")
+            if args.prune:
+                msg = f" # Prune enabled: {c} out of {len(source_files)} copied for BL = {bl}"
+            else:
+                msg = f" # Prune disabled: {len(source_files)} copied for BL = {bl}"
+            print(msg)
 
         else:
-            print(f"BL {bl} skipped. {blSource} not found.")
+            print(f" # BL {bl} skipped. {blSource} not found.")
         
 
 
