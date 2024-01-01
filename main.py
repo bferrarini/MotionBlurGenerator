@@ -56,6 +56,7 @@ def parse_args():
     loop_parser.add_argument("-B", "--blurred-datasets", dest="root_blurred_folder", help="Folder where the blurred versions of a datasets are stored.")
     loop_parser.add_argument("-b", "--blur-intesities", dest="nFrames", type=int, nargs='+', required=True, help="Used to identify the folder where the lurred images are stored (i.e. the product avg-blur)")
     loop_parser.add_argument("--blur-prefix", dest="bPrefix", type=str, default="AVGBLUR_B-", required=False, help="Fix the problem of potentially different namning convention of the blurred directories.")
+    #loop_parser.add_argument("--blur-prefix", dest="bPrefix", type=str, default="", required=False, help="Fix the problem of potentially different namning convention of the blurred directories.")
     loop_parser.add_argument("--ref_gps", dest="ref_gps_file", type=str, required=True, help="GPS file for the reference traversal.")
     loop_parser.add_argument("--query_gps", dest="query_gps_file", type=str, required=True, help="GPS file for the query traversal.")
     loop_parser.add_argument("--prune", dest="prune", type=bool, default="false", help="True means that the blurred datasets will be reduced.")
