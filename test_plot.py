@@ -1,7 +1,7 @@
 import gpmf
 import os
 
-from utility import GpsExtractor, Visualizer
+from utility import GpsExtractor, Visualizer, PerformanceVisualizer
 
 #fn1 = "D:\\datasets\\MotionBlur\\for_testing\\LUZZARA-03A.MP4"
 #fn2 = "D:\\datasets\\MotionBlur\\for_testing\\LUZZARA-03B.MP4"
@@ -82,3 +82,6 @@ for task in tasks:
 #visualizer.append("B10", gps12)
 
 #visualizer.draw_map(gps_map)
+
+fn = "/home/main/Documents/MotionBlur/results/result_files/by_place_results.txt"
+pfv = PerformanceVisualizer(fn)

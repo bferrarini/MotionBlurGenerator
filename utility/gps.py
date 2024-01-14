@@ -9,6 +9,7 @@ import os
 from collections import OrderedDict
 from utility import Unspooler
 import folium
+import pandas
 
 
 class GpsExtractor():
@@ -201,3 +202,23 @@ class Visualizer():
                 folium.Circle((points[j][0], points[j][1]), radius=1, color = color).add_to(m)
             i += 1
         m.save(to_file)  
+        
+
+
+
+class PerformanceVisualizer(Visualizer):
+    
+    def __init__(self, performance_csv : str = None):
+        self.data = OrderedDict()
+        if not performance_csv is None:
+            self._add_data(performance_csv)
+            
+    def _add_data(self, fn, sep = ";"):
+        first = True
+        with open(fn, "r") as f:
+            for line in f:
+                if first:
+                    fieldnames = line.split(sep)
+                else:
+                    pass
+                
