@@ -17,7 +17,8 @@ from utility import GpsExtractor, Visualizer, PerformanceVisualizer
 #fn12 = "D:\\datasets\\MotionBlur\\LUZZARA-04\\loop_10.MP4"
 #gps_map = "D:\\datasets\\MotionBlur\\LUZZARA-04\\plot.html" 
 
-root = "/home/main/Documents/MotionBlur/LUZZARA-04/raw_videos/"
+#root = "/home/main/Documents/MotionBlur/LUZZARA-04/raw_videos/"
+root = "D:\\research\\MotoinBlur\\benckmark_datasets\\LUZZARA-04\\raw_videos"
 
 fn1 = os.path.join(root, "loop_01.MP4")
 fn2 = os.path.join(root, "loop_02.MP4")
