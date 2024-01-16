@@ -10,6 +10,7 @@ from collections import OrderedDict
 from utility import Unspooler
 import folium
 import pandas
+from abc import ABC, abstractmethod
 
 
 class GpsExtractor():
@@ -205,20 +206,115 @@ class Visualizer():
         
 
 
+class Wrapper():
+
+    def __init__(self, fn : str) -> None:
+        self.data = {}
+        self.fn = fn
+        self._load_data()        
+
+    def __getitem__(self,index):
+        c = self.data[index]
+        return c
+    
+    def items(self):
+        return self.data.items()
+    
+    def keys(self):
+        return self.data.keys()
+    
+    @staticmethod
+    def _load_data(self):
+        pass
+
+class GPSWrapper(Wrapper):
+    
+    def __init__(self, fn : str):
+        super().__init__(fn)
+
+    def _load_data(self):
+        with open(self.fn, 'r') as f:
+            headers = f.readline().rstrip().split(",")
+
+        isHeader = True
+        with open(self.fn, 'r') as csvfile: 
+            reader = csv.DictReader(csvfile, fieldnames = headers) 
+            for line in reader:
+                if not isHeader:
+                    coords = (float(line['latitude']), float(line['longitude']))
+                    self.data[line['label']] = coords
+                else:
+                    isHeader = False
+
+class PerfWrapper(Wrapper):
+
+    def __init__(self, fn : str, metric = "EP"):
+        self.metric = metric
+        super().__init__(fn)
+
+    def _load_data(self):
+        with open(self.fn, 'r') as f:
+            headers = f.readline().rstrip().split(";")
+
+        isHeader = True
+        with open(self.fn, 'r') as csvfile: 
+            csv.register_dialect('dialect1', delimiter=';', quoting=csv.QUOTE_NONE)
+            reader = csv.DictReader(csvfile, fieldnames = headers, dialect = 'dialect1')   
+            for line in reader:
+                if not isHeader:
+                    self._add_to_dict(line)
+                    #self.data[line['Q.LABEL']] = float(line[self.metric])
+                else:
+                    isHeader = False
+
+    def _add_to_dict(self, line):
+        vpr = line['VPR']
+        ds = line['DATASET']
+        T = str(float(line['TOLERANCE']))
+        L = line['Q.LABEL']
+        if not vpr in self.data:
+            self.data[vpr] = OrderedDict()       
+        if not ds in self.data[vpr]:
+            self.data[vpr][ds] = OrderedDict()
+        if not T in self.data[vpr][ds]:
+            self.data[vpr][ds][T] = OrderedDict()
+        if not L in self.data[vpr][ds][T]:
+            self.data[vpr][ds][T][L] = OrderedDict()        
+        self.data[vpr][ds][T][L] = float(line[self.metric])
+
+    def filter(self, vpr, dataset, tolerance):
+        d = self.data[vpr][dataset][tolerance]
+        return d
 
 class PerformanceVisualizer(Visualizer):
     
-    def __init__(self, performance_csv : str = None):
-        self.data = OrderedDict()
-        if not performance_csv is None:
-            self._add_data(performance_csv)
-            
-    def _add_data(self, fn, sep = ";"):
-        first = True
-        with open(fn, "r") as f:
-            for line in f:
-                if first:
-                    fieldnames = line.split(sep)
-                else:
-                    pass
+    def __init__(self, gps : GPSWrapper, perf : PerfWrapper, vpr, dataset, tolerance = "10.0"):
+        self.gps = gps
+        self.perf = perf.filter(vpr=vpr, dataset=dataset, tolerance=tolerance)
+
+    def draw_map(self, to_file):
+        m = None
+        i = 0
+        qLabels = list(self.perf.keys())
+        start = self.gps[qLabels[0]]
+        end = self.gps[qLabels[-1]]
+        vstart = self.perf[qLabels[0]]
+        vend = self.perf[qLabels[-1]]
+        m = folium.Map(location=(start[0], start[1]), zoom_start=15)
+        folium.Marker((start[0], start[1]), color = self._color(vstart), tooltip=f"Start").add_to(m)
+        folium.Marker((end[0], end[1]), color = self._color(vend), tooltip=f"End").add_to(m)
+        for j in range(1,len(qLabels) - 1):
+            point = self.gps[qLabels[j]]
+            value = self.perf[qLabels[j]]
+            folium.CircleMarker((point[0], point[1]), radius=4, color = self._color(value), fill = True, fill_color = self._color(value), fill_opacity=0.7).add_to(m)
+        i += 1
+        m.save(to_file)
+
+    def _color(self, measurment):
+        if measurment < 0.5:
+            return "red"
+        if measurment < 0.75:
+            return "orange"
+        return "green"
+
                 
