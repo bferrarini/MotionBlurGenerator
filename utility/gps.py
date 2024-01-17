@@ -290,6 +290,7 @@ class PerformanceVisualizer(Visualizer):
     
     def __init__(self, gps : GPSWrapper, perf : PerfWrapper, vpr, dataset, tolerance = "10.0"):
         self.gps = gps
+        self.metric = perf.metric
         self.perf = perf.filter(vpr=vpr, dataset=dataset, tolerance=tolerance)
 
     def draw_map(self, to_file):
@@ -311,10 +312,23 @@ class PerformanceVisualizer(Visualizer):
         m.save(to_file)
 
     def _color(self, measurment):
+        if self.metric == 'EP':
+            if measurment < 0.5:
+                return 'red'
+            if measurment < 0.6:
+                return 'lime'
+            if measurment < 0.7:
+                return 'green'
+            if measurment < 0.8:
+                return 'green'
+            if measurment < 0.9:
+                return 'green' 
+            return 'green'
+        
         if measurment < 0.5:
-            return "red"
-        if measurment < 0.75:
-            return "orange"
-        return "green"
+            return 'red'
+        else:
+            return 'green'
+        
 
                 
