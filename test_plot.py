@@ -87,7 +87,7 @@ for task in tasks:
 #fn = "/home/main/Documents/MotionBlur/results/result_files/by_place_results.txt"
 fn = r"V:\My Drive\research\MotionBlur\results\result_files\10_by_place_results.txt"
 gpsfn = r"V:\My Drive\research\MotionBlur\LUZZARA-04\gps\LUZZARA-04-01.txt"
-outfn = os.path.join(gps_map, "EP.svg")
+outfn = os.path.join(gps_map, "EP.html")
 #pfv = PerformanceVisualizer(fn)
 
 perf = PerfWrapper(fn, 'EP')
