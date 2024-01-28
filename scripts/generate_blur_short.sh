@@ -31,7 +31,7 @@
 # ARG3 and ongoing
 # blur levels
 
-main="/home/myway/vccode_workspace/MotionBlurGenerator/main.py"
+main="/home/myway/vscode_workspace/MotionBlurGenerator/main.py"
 
 # Args and variable checks
 echo "loop $3"

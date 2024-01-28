@@ -13,7 +13,7 @@
 # | - low_fps
 #
 # ARG #2
-# The 'working' nome of the loop, i.e. the name of the folder where the freme of the the original video are extractred
+# The 'working' name of the loop, i.e. the name of the folder where the freme of the the original video are extractred
 # /home/myway/Documents/MotionBlur/LUZZARA-04/
 # | - unrolled
 #   | - LUZZARA-04-01
@@ -29,9 +29,9 @@
 #     | - ...
 #
 # ARG3 and ongoing
-# blur levels
+# MP4 file followed by blur levels
 
-main="/home/myway/vccode_workspace/MotionBlurGenerator/main.py"
+main="/home/myway/vscode_workspace/MotionBlurGenerator/main.py"
 
 # Args and variable checks
 echo "loop $3"
