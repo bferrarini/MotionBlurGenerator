@@ -313,16 +313,12 @@ class PerformanceVisualizer(Visualizer):
 
     def _color(self, measurment):
         if self.metric == 'EP':
+            if measurment < 0.25:
+                return 'red'            
             if measurment < 0.5:
-                return 'red'
-            if measurment < 0.6:
-                return 'lime'
-            if measurment < 0.7:
-                return 'green'
-            if measurment < 0.8:
-                return 'green'
-            if measurment < 0.9:
-                return 'green' 
+                return 'tomato'
+            if measurment < 0.75:
+                return 'limegreen'
             return 'green'
         
         if measurment < 0.5:
