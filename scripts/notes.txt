@@ -1,7 +1,18 @@
-STEP 1
+STEPS
 
 1) Using the motion blur generator script
 in a terminal type:
 	source /home/main/vscode_workplace/MotionBlurGenerator/.venv/bin/activate
 	#example: <working dir> <desired dataset name> <MP4 video> <desred blur levels>
 	/home/main/vscode_workplace/MotionBlurGenerator/scripts/generate_blur.sh /home/main/Documents/MotionBlur/GUASTALLA-03 GUASTALLA-03-03 loop3.MP4 2 3 4 6 8 10 12 16 20 24 30 40 48 60 80 120 240
+2) Assemble the benchmark
+	source /home/main/vscode_workplace/MotionBlurGenerator/.venv/bin/activate
+	#Modify the script "assemble_benchmark.sh" as needed and run it
+	/home/main/vscode_workplace/MotionBlurGenerator/scripts/assemble_benckmarks.sh
+3) Generate the GT files
+	source /home/main/vscode_workplace/VPR_Evaluation_Framwork/.venv/bin/activate
+	#run the following script with the dataset subdir as an argument. Here is an example for guasatalla
+	/home/main/vscode_workplace/VPR_Evaluation_Framwork/scripts/generate_gt.sh /home/main/Documents/MotionBlur/GUASTALLA-03
+4) Run the evaluation program after changed it as needed
+	/home/main/vscode_workplace/VPR_Evaluation_Framwork/main_evaluate_new.py
+	
