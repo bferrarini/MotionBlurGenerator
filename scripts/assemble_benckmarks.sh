@@ -3,14 +3,15 @@
 #source /home/main/vscode_workplace/MotionBlurGenerator/.venv/bin/activate
 py=python3
 main=/home/main/vscode_workplace/MotionBlurGenerator/main.py
-#dataset_name=LUZZARA-04
-dataset_name=GUASTALLA-03
+dataset_name=LUZZARA-04
+#dataset_name=GUASTALLA-03
 prefix=${dataset_name}
 root_dir=/home/main/Documents/MotionBlur/${dataset_name}
 
 #query:reference
 #target_pairs=("02:01" "03:01" "04:01" "05:01" "06:01" "04:02")
-target_pairs=("03:05" "05:03")
+target_pairs=("01:01" "02:02" "03:03")
+#target_pairs=("03:03" "05:05")
 
 for pair in ${target_pairs[@]}
 do 
