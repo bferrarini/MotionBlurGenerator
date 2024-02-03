@@ -10,7 +10,7 @@ root_dir=/home/main/Documents/MotionBlur/${dataset_name}
 
 #query:reference
 #target_pairs=("02:01" "03:01" "04:01" "05:01" "06:01" "04:02")
-target_pairs=("01:01" "02:02" "03:03")
+target_pairs=("04:04")
 #target_pairs=("03:03" "05:05")
 
 for pair in ${target_pairs[@]}
