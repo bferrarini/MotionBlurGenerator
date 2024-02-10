@@ -31,33 +31,33 @@ REM MP4 file followed by blur levels
 
 REM Args and variable checks
 
-main= "C:\Users\gtgol\VS_CODE\MotionBlurGenerator\main.py"
-py = "C:\Users\gtgol\VS_CODE\MotionBlurGenerator\.venv\Scripts\python.exe"
+set main="C:\Users\gtgol\VS_CODE\MotionBlurGenerator\main.py"
+set py="C:\Users\gtgol\VS_CODE\MotionBlurGenerator\.venv\Scripts\python.exe"
 
 
 echo loop %3
 echo SOURCE DATA IN %1
 echo BLURRING IMAGES IN %2
-set bls="2" "3" "4" "6" "8" "10" "12" "16" "20" "24" "30" "40" "48" "60" "80" "120" "240"
+%set bls="002" "003" "004" "006" "008" "010" "012" "016" "020" "024" "030" "040" "048" "060" "080" "120" "240"
+set bls=002 003 004 006 008 010 012 016 020 024 030 040 048 060 080 120 240
 
 REM STEP 0 GPS
-%py% %main% "gps" -v %1/raw_videos/%3 -o %1/gps/%2.txt --fill-the-gaps
+rem%py% %main% gps -v %1\raw_videos\%3 -o %1\gps\%2.txt --fill-the-gaps
 
 REM STEP 1: unroll
-%py% %main% extract -v %1/raw_videos/%3 -o %1/unrolled/%2 -m %1/mute_videos/MUTE_%3 -W 960 -H 540 -f jpg
+rem%py% %main% extract -v %1\raw_videos\%3 -o %1\unrolled\%2 -m %1\mute_videos\MUTE_%3 -W 960 -H 540 -f jpg
 
-REM STEP 2: BLURRING
-(for %%a in (%bls%) do ( 
-   %py% %main% avg-blur -d %1/unrolled/%2 -o %1/blurred/%2 -b %%a
-))
+REMSTEP 2: BLURRING
+rem(for %%a in (%bls%) do ( 
+rem  %py% %main% avg-blur -d %1\unrolled\%2 -o %1\blurred\%2 -b %%a
+rem))
 
 REM STEP 3: PRUNING TO 1 FPS
 
 (for %%a in (%bls%) do ( 
-    set formatted="00000%%a":~-3!
-    %py% %main% prune -d %1/blurred/%2/AVGBLUR_B-%formatted% -o %1/pruned_blurred/%2/%formatted%" --fps=%%a --sfps=240 --override 
+    %py% %main% prune -d %1\blurred\%2/AVGBLUR_B-%%a -o %1\pruned_blurred\%2\%%a --fps=%%a --sfps=240 --override 
     echo "BL %%a PROCESSED!"
 ))
 
 REM STEP 4: GENRATING 1_FPS references
-%py% %main% prune -d %1/unrolled/%2 -o %1/low_fps/%2 --fps=1 --sfps=240 --override
+rem%py% %main% prune -d %1\unrolled\%2 -o %1\low_fps\%2 --fps=1 --sfps=240 --override
