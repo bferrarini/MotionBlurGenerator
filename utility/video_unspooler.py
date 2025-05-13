@@ -5,7 +5,7 @@ import sys
 import gpmf
 import gpxpy
 from pathlib import Path
-from moviepy.editor import VideoFileClip
+from moviepy import VideoFileClip
 
 
 from datetime import timedelta
