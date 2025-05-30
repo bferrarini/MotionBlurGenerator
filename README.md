@@ -37,4 +37,31 @@ idx,seq,true_gps,frameId,label,latitude,longitude,elevation,speed,pos_diluition,
 ```
 ## extract: Extracting Frames From a Video
 
+A typical usage is as follow:
+```
+python main.py extract -v YOUR_VIDEO_FULLPATH -o DESTINATION_DIR -m MUTE_VIDEO_FULLPATH -W TARGET_WIDTH -H TARGET_HEIGHT -f IMAGE_FORMAT
+```
+- YOUR_VIDEO_FULLPATH: it is the go-pro video to unfold into the frames
+- DESTINATION_DIR: the folder where all the frames will be stored
+- MUTE_VIDEO_FULLPATH: the actual extraction of the frames is from the video without the audio. This file specifies the destination of such muted video. It is not required. 
+- TARGET_WIDTH: reshapes the extracted frame. It is not required. 
+- TARGET_HEIGHT: reshapes the extracted frame. It is not required. 
+- IMAGE_FORMAT: jpg, png, etc...
+
+Some examples:
+
+The setting used to produde the dataset for the paper.
+```
+python main.py extract -v go_pro/video_01.mp4 -o go_pro/video_01_frames -m video_01_no_audio.mp4 -W 960 -H 540 -f jpg
+```
+You you do not need the no-audio video:
+```
+python main.py extract -v go_pro/video_01.mp4 -o go_pro/video_01_frames --clean-mute-video -W 960 -H 540 -f jpg
+```
+If you do not need any reshape:
+```
+python main.py extract -v go_pro/video_01.mp4 -o go_pro/video_01_frames --clean-mute-video -f jpg
+```
+More details can be found in the `parse_args()` of `main.py`
+
 ## avg-blur: Creating a Blurred Datasets
