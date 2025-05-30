@@ -43,10 +43,11 @@ python main.py extract -v YOUR_VIDEO_FULLPATH -o DESTINATION_DIR -m MUTE_VIDEO_F
 ```
 - YOUR_VIDEO_FULLPATH: it is the go-pro video to unfold into the frames
 - DESTINATION_DIR: the folder where all the frames will be stored
-- MUTE_VIDEO_FULLPATH: the actual extraction of the frames is from the video without the audio. This file specifies the destination of such muted video. It is not required. 
+- MUTE_VIDEO_FULLPATH: the actual extraction of the frames is from the video without the audio. This file specifies the destination of such a muted video. It is not required. 
 - TARGET_WIDTH: reshapes the extracted frame. It is not required. 
 - TARGET_HEIGHT: reshapes the extracted frame. It is not required. 
 - IMAGE_FORMAT: jpg, png, etc...
+
 
 Some examples:
 
@@ -65,3 +66,34 @@ python main.py extract -v go_pro/video_01.mp4 -o go_pro/video_01_frames --clean-
 More details can be found in the `parse_args()` of `main.py`
 
 ## avg-blur: Creating a Blurred Datasets
+
+```
+python main.py avg-blur -d FOLDER_WITH_THE_FRAMES -o OUT_FOLDER -b BLUR_INTENSITIES
+```
+- FOLDER_WITH_THE_FRAMES: it is the directory where the source frames are stored. It corresponds to DESTINATION_DIR of the above section.
+- OUT_FOLDER: is where the blurred frames are stored
+- BLUR_INTENSITIES: a list of integers that specify the number of frames to average. The higher, the more intense the blur effect. For example, 040 produces a blurred frame by averaging 40 consecutive frames in FOLDER_WITH_THE_FRAMES
+
+Here is an example:
+```
+python main.py avg-blur -d go_pro/video_01_frames -o go_pro/video_01_blurred_frames -b 040 080 120 240
+```
+This command produces four blurred versions of the video frames into go_pro/video_01_blurred_frames
+
+
+## prune: reducing the number of frames in the dataset.
+If you need to reduce the number of frames to use in one of your experiment, you can delete some of them.
+It should be used only on sharp frames from an high FPS (For example on go_pro/video_01_frames) to produce slimmer dataset for some experiments (e.g. reference loop in VPR).
+```
+python main.py prune -d FOLDER_WITH_THE_FRAMES -o LOW_FPS_FOLDER --fps=TARGET_FPS --sfps=FPR_OF_THE_SOURCE --override
+```
+- FOLDER_WITH_THE_FRAMES: it is the directory where the source frames are stored. It corresponds to DESTINATION_DIR of one of the above section.
+- LOW_FPS_FOLDER: is where the pruned dataset is stored
+- TARGET_FPS: the target fps of the pruned dataset
+- FPR_OF_THE_SOURCE: how many frames in FOLDER_WITH_THE_FRAMES for a second of video
+
+Here is an example:
+```
+python main.py prune -d go_pro/video_01_frames -o go_pro/pruned_video_01 --fps=1 --sfps=240 --override
+```
+The video where recorded and 240 FPS. We want to keep only 1 frame per second, that is 1 out 240.
