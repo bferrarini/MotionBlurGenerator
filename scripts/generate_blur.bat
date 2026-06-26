@@ -47,7 +47,7 @@ REM STEP 0 GPS
 REM STEP 1: unroll
 %py% %main% extract -v %1\raw_videos\%3 -o %1\unrolled\%2 -m %1\mute_videos\MUTE_%3 -W 960 -H 540 -f jpg
 
-REMSTEP 2: BLURRING
+REM STEP 2: BLURRING
 (for %%a in (%bls%) do ( 
   %py% %main% avg-blur -d %1\unrolled\%2 -o %1\blurred\%2 -b %%a
 ))
