@@ -1,8 +1,21 @@
 # MotionBlurGenerator
-main.py takes three commands: gps, extract, avg-blur
 
-# gps: extracting GPS coordinates from a video
+The code provided in this repository was used to generate motion blur datasets for the paper "On Motion Blur and Deblurring in Visual Place Recognition" (see citation below). However, this code base can be used on any GoPro videos to generate motion blur datasets and benchmarking data to test VPR algorithms.
+
+The main entry point of this code base is the script `main.py`.
+
+`main.py` takes several commands: `gps`, `extract`, `avg-blur`, `prune`, `loops`.
+
+The following sections are intended to be a guide to get benchmarking dataset from raw GoPro videos.
+
+At the bottom of this README file you will find the link to the dataset used for the paper "On Motion Blur and Deblurring in Visual Place Recognition".
+
+
+## gps: extracting GPS coordinates from a video
 Please note that this function incorporates the code from [pygmf](https://github.com/alexis-mignon/pygpmf).<br/>
+
+**Important Note:** Extracting GPS data from GoPro videos works only if they lack an audio track. If your video has an audio track, you must remove it prior to running the GPS extraction step.
+
 Usage:
 ```
 python main.py gps -v /home/main/Documents/GX010091.MP4 -o /home/main/Documents/GX010091_GAPS.CSV
@@ -14,7 +27,7 @@ To fill the gaps between frames add the flag **--fill-the-gaps**:
 python main.py gps -v /home/main/Documents/GX010091.MP4 -o /home/main/Documents/GX010091_GAPS.CSV --fill-the-gaps
 ```
 
-Below it is an example of CSV with filled gaps. The frames **0** and **13** are real GPS data (look at the __true_gps__ column). The frames in the between are reported with GPS data replicated. This is done to have a complete list of the frames to facilitate the grownd truth creation.
+Below it is an example of CSV with filled gaps. The frames **0** and **13** are real GPS data (look at the __true_gps__ column). The frames in the between are reported with GPS data replicated. This is done to have a complete list of the frames to facilitate the ground truth creation.
 
 ```
 idx,seq,true_gps,frameId,label,latitude,longitude,elevation,speed,pos_diluition,datetime,yy,MM,dd,hh,mm,ss,us
@@ -55,7 +68,7 @@ The setting used to produde the dataset for the paper.
 ```
 python main.py extract -v go_pro/video_01.mp4 -o go_pro/video_01_frames -m video_01_no_audio.mp4 -W 960 -H 540 -f jpg
 ```
-You you do not need the no-audio video:
+If you do not need the no-audio video:
 ```
 python main.py extract -v go_pro/video_01.mp4 -o go_pro/video_01_frames --clean-mute-video -W 960 -H 540 -f jpg
 ```
@@ -97,3 +110,120 @@ Here is an example:
 python main.py prune -d go_pro/video_01_frames -o go_pro/pruned_video_01 --fps=1 --sfps=240 --override
 ```
 The video where recorded and 240 FPS. We want to keep only 1 frame per second, that is 1 out 240.
+
+---
+
+## Full Pipeline: Obtaining Benchmarks from Raw Videos
+
+This section describes the end-to-end process for generating motion blur benchmark datasets from your raw videos. It relies on executing the commands documented above in a specific order. You can automate these steps by referring to the scripts provided in the `scripts` folder (e.g., `generate_blur.bat` and `assemble_benchmark.bat`).
+
+> [!NOTE]
+> To facilitate these operations, we provide **`.bat` files** (which are fully tested) and **`.sh` files** (which are currently untested and provided as-is) in the `scripts/` directory.
+> look for:
+> - scripts/generate_blur.bat (or sh if you are on linux)
+> - scripts/assemble_benchmark.bat (or sh if you are on linux)
+
+
+### 1. Directory Structure Setup
+
+Create a root directory for your dataset (e.g., `<your_path>\GUASTALLA-03`) and set up the following subdirectories:
+- `raw_videos`: Place your source `.mp4` videos here.
+- `mute_videos`: Destination for videos with the audio track removed.
+- `gps`: Destination for the extracted GPS data (`.txt` or `.csv`).
+- `unrolled`: Destination for the extracted original frames.
+- `blurred`: Destination for the frames with the averaging blur effect applied.
+- `pruned_blurred`: Destination for the pruned blurred frames.
+- `low_fps`: Destination for the sharp low-fps reference frames.
+- `benchmark`: The final destination where the assembled loop pairs (query and reference) will reside.
+
+For the examples below, let's assume:
+- Dataset Root: `<your_path>\GUASTALLA-03`
+- Dataset Name / Prefix: `GUASTALLA-03`
+- Sequence/Video Name: `GUASTALLA-03-05`
+- Source Video: `<your_path>\GUASTALLA-03\raw_videos\video_05.mp4`
+
+### 2. Extract GPS Data (Step 0)
+
+Extract the GPS track from the original video.
+**Crucial requirement:** GoPro GPS extraction works only if the video lacks an audio track. Either provide a video file that has already been muted, or ensure your source video has no audio.
+
+```
+python main.py gps -v <your_path>\GUASTALLA-03\raw_videos\video_05.mp4 -o <your_path>\GUASTALLA-03\gps\GUASTALLA-03-05.txt --fill-the-gaps
+```
+
+### 3. Extract Frames (Step 1)
+
+Unroll the video into its constituent frames. This will also output a muted video which can be useful.
+
+```
+python main.py extract -v <your_path>\GUASTALLA-03\raw_videos\video_05.mp4 -o <your_path>\GUASTALLA-03\unrolled\GUASTALLA-03-05 -m <your_path>\GUASTALLA-03\mute_videos\MUTE_video_05.mp4 -W 960 -H 540 -f jpg
+```
+
+### 4. Apply Blur (Step 2)
+
+Create different blur intensities by averaging multiple consecutive frames. In this example, we generate intensities for `10`, `20`, `30`, `40`, `60`, `80`, `120`, and `240` frames.
+
+```
+python main.py avg-blur -d <your_path>\GUASTALLA-03\unrolled\GUASTALLA-03-05 -o <your_path>\GUASTALLA-03\blurred\GUASTALLA-03-05 -b 10 20 30 40 60 80 120 240
+```
+*(You must repeat this for every blur level, or pass them as a list depending on your platform/script automation)*
+
+### 5. Prune Blurred Frames (Step 3)
+
+The blurred sequences must be pruned to simulate a specific FPS. Here we assume 240 FPS source and we prune to match the blur length itself or simply down to 1 FPS for benchmark generation. The scripts do this per blur level (`<bl>`):
+
+```
+python main.py prune -d <your_path>\GUASTALLA-03\blurred\GUASTALLA-03-05\AVGBLUR_B-<bl> -o <your_path>\GUASTALLA-03\pruned_blurred\GUASTALLA-03-05\<bl> --fps=<bl> --sfps=240 --override 
+```
+*(Replace `<bl>` with the respective blur intensity like `010`, `020`, etc.)*
+
+### 6. Generate 1-FPS Reference Frames (Step 4)
+
+Extract a set of sharp reference frames at 1 FPS from the unrolled sequence to act as the ground truth.
+
+```
+python main.py prune -d <your_path>\GUASTALLA-03\unrolled\GUASTALLA-03-05 -o <your_path>\GUASTALLA-03\low_fps\GUASTALLA-03-05 --fps=1 --sfps=240 --override
+```
+
+### 7. Assemble Benchmark Dataset (Step 5)
+
+Once you have generated at least one **Query** sequence (e.g. `GUASTALLA-03-05`) and one **Reference** sequence (e.g. `GUASTALLA-03-03`) through the steps above, you can pair them to assemble the final benchmark.
+
+First, copy the sharp 1 FPS frames into a `001` subfolder of your query, to act as the baseline unblurred sequence:
+```
+mkdir <your_path>\GUASTALLA-03\pruned_blurred\GUASTALLA-03-05\001
+xcopy /E <your_path>\GUASTALLA-03\low_fps\GUASTALLA-03-05 <your_path>\GUASTALLA-03\pruned_blurred\GUASTALLA-03-05\001
+```
+
+Then run the `loops` command to match the query against the reference using their GPS traces:
+```
+python main.py loops -R <your_path>\GUASTALLA-03\low_fps\GUASTALLA-03-03 -o <your_path>\GUASTALLA-03\benchmark\GUASTALLA-03-05_to_03 -B <your_path>\GUASTALLA-03\pruned_blurred\GUASTALLA-03-05 --ref_gps="<your_path>\GUASTALLA-03\gps\GUASTALLA-03-03.txt" --query_gps="<your_path>\GUASTALLA-03\gps\GUASTALLA-03-05.txt" --blur-prefix="" -b 1 10 20 30 40 60 80 120 240
+```
+This final command creates the evaluation-ready dataset pairing the queries and references together.
+
+## Dataset
+
+You can download the datasets used in the paper from [here](https://data.eng.unimelb.edu.au/vpr/motion-blur-benchmark-datasets/).
+
+The dataset consists of three locations captured at several blur intensities. For each localtions the are two distinct pairs of query and reference loops as described in the paper. 
+
+You can use the code of this repository to generate any number of blur levels starting from your own GoPro videos (240 fp are reccomanded) to generate your own blurred dataset.
+
+---
+## Citation
+
+This code was used to produce the paper "On Motion Blur and Deblurring in Visual Place Recognition". If you use this code or the resulting datasets in your research, please cite our work:
+
+```bibtex
+@ARTICLE{10938388,
+  author={Ismagilov, Timur and Ferrarini, Bruno and Milford, Michael and Tan Viet Tuyen, Nguyen and Ramchurn, Sarvapali D. and Ehsan, Shoaib},
+  journal={IEEE Robotics and Automation Letters}, 
+  title={On Motion Blur and Deblurring in Visual Place Recognition}, 
+  year={2025},
+  volume={10},
+  number={5},
+  pages={4746-4753},
+  keywords={Visual place recognition;Videos;Robots;Benchmark testing;Meteorology;Lighting;Sensors;Visualization;Trajectory;Training;Localization;vision-based navigation;data sets for robotic vision},
+  doi={10.1109/LRA.2025.3554103}
+}
+```

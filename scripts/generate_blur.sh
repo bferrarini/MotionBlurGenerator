@@ -50,10 +50,10 @@ python $main gps -v $1/raw_videos/$3 -o $1/gps/$2.txt --fill-the-gaps
 python $main extract -v $1/raw_videos/$3 -o $1/unrolled/$2 -m $1/mute_videos/MUTE_$3 -W 960 -H 540 -f jpg
 
 # STEP 2: BLURRING
-# delim=" "
-# array to string with a delimiter
-# bls="${bls%$delim}"                  # yields one:two_three
-# python $main avg-blur -d $1/unrolled/$2 -o $1/blurred/$2 -b "${bls%$delim}" 
+delim=" "
+array to string with a delimiter
+bls="${bls%$delim}"                  # yields one:two_three
+python $main avg-blur -d $1/unrolled/$2 -o $1/blurred/$2 -b "${bls%$delim}" 
 
 
 N=4
