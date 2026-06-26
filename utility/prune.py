@@ -3,7 +3,7 @@ import re
 import shutil
 from tqdm import tqdm
 
-def prune_dataset(data_dir, out_dir, source_FPS, target_FPS, offset = 0, tail = 0, override = False, file_filter = ".*\.(jpg|png)"):
+def prune_dataset(data_dir, out_dir, source_FPS, target_FPS, offset = 0, tail = 0, override = False, file_filter = ".*(jpg|png)"):
     source_file_names = [f for f in os.listdir(data_dir) if re.search(file_filter,f)]
     source_file_names.sort(reverse=False)
     source_full = list(map(lambda x: os.path.join(data_dir, x), source_file_names))

@@ -10,8 +10,8 @@ REM dataset_name and parent are given as separated args to keep the script simpl
 REM Example
 REM .\scripts\assemble_benchmark.bat D:\datasets\MotionBlur CASONI-01 01 07
 
-set main="C:\Users\gtgol\VS_CODE\MotionBlurGenerator\main.py"
-set py="C:\Users\gtgol\VS_CODE\MotionBlurGenerator\.venv\Scripts\python.exe"
+set main="C:\Users\gtgol\VS-CODE\MotionBlurGenerator\main.py"
+set py="C:\Users\gtgol\VS-CODE\MotionBlurGenerator\.venv\Scripts\python.exe"
 
 set dataset_name=%2
 set root_dir=%1\%2
@@ -26,9 +26,11 @@ set destination=%root_dir%\benchmark\%prefix%-%query%_to_%reference%
 REM add the no no-blurred folder
 set query_no_blurred=%root_dir%\low_fps\%prefix%-%query%
 del %query_dir%\001
+mkdir %query_dir%\001
 xcopy /E %root_dir%\low_fps\%prefix%-%query% %query_dir%\001
 
 set rGPS=%root_dir%\gps\%prefix%-%reference%.txt
 set qGPS=%root_dir%\gps\%prefix%-%query%.txt
 
-%py% %main% loops -R %ref_dir% -o %destination% -B %query_dir% --ref_gps="%rGPS%" --query_gps="%qGPS%" --blur-prefix="" -b 1 2 3 4 6 8 10 12 16 20 24 30 40 48 60 80 120 240
+rem %py% %main% loops -R %ref_dir% -o %destination% -B %query_dir% --ref_gps="%rGPS%" --query_gps="%qGPS%" --blur-prefix="" -b 1 2 3 4 6 8 10 12 16 20 24 30 40 48 60 80 120 240
+%py% %main% loops -R %ref_dir% -o %destination% -B %query_dir% --ref_gps="%rGPS%" --query_gps="%qGPS%" --blur-prefix="" -b 1 10 20 30 40 60 80 120 240

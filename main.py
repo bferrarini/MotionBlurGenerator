@@ -161,7 +161,7 @@ def command_prune_dataset(args):
     prune_dataset(data_dir=args.img_dataset_folder, out_dir=args.output, 
                   source_FPS=args.source_fps, target_FPS=args.fps, 
                   offset=args.offset, tail=args.tail, 
-                  override=args.override, file_filter= ".*\.(jpg|png)")
+                  override=args.override, file_filter= ".*(jpg|png)$")
 
 # TEST
 # loops -R D:\\datasets\\MotionBlur\\LUZZARA-03B_1FPS -B D:\\datasets\\MotionBlur\\LUZZARA-03A_BLURRED -o D:\\datasets\\MotionBlur\\LUZZARA-03AB_test --ref_gps=D:\\datasets\\MotionBlur\\LUZZARA-03A.csv --query_gps=D:\\datasets\\MotionBlur\\LUZZARA-03B.csv --prune=True --prune_keep_every=240 --prune_offset=0 -b 2 4 240
@@ -207,8 +207,8 @@ def command_build_traversals(args):
             target_reference = os.path.join(loopDir, "reference")
             if not os.path.exists(target_reference):
                 os.makedirs(target_reference)
-            source_files = [os.path.join(rDir, f) for f in os.listdir(rDir) if re.search(".*\.(jpg|png)",f)]
-            destination_files = [os.path.join(target_reference, f) for f in os.listdir(rDir) if re.search(".*\.(jpg|png)",f)]
+            source_files = [os.path.join(rDir, f) for f in os.listdir(rDir) if re.search(".*(jpg|png)$",f)]
+            destination_files = [os.path.join(target_reference, f) for f in os.listdir(rDir) if re.search(".*(jpg|png)$",f)]
             c = 0
             for s,d in zip(source_files,destination_files):
                 shutil.copy(src = s, dst= d)
@@ -219,8 +219,8 @@ def command_build_traversals(args):
             if not os.path.exists(target_query):
                 os.makedirs(target_query)
 
-            source_files = [os.path.join(blSource, f) for f in os.listdir(blSource) if re.search(".*\.(jpg|png)",f)]
-            destination_files = [os.path.join(target_query, f) for f in os.listdir(blSource) if re.search(".*\.(jpg|png)",f)]
+            source_files = [os.path.join(blSource, f) for f in os.listdir(blSource) if re.search(".*(jpg|png)$",f)]
+            destination_files = [os.path.join(target_query, f) for f in os.listdir(blSource) if re.search(".*(jpg|png)$",f)]
 
             if args.prune:
                 skip = args.keep // bl

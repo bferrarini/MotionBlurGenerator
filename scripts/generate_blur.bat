@@ -38,7 +38,7 @@ set py="C:\Users\gtgol\VS_CODE\MotionBlurGenerator\.venv\Scripts\python.exe"
 echo loop %3
 echo SOURCE DATA IN %1
 echo BLURRING IMAGES IN %2
-%set bls="002" "003" "004" "006" "008" "010" "012" "016" "020" "024" "030" "040" "048" "060" "080" "120" "240"
+rem set bls="002" "003" "004" "006" "008" "010" "012" "016" "020" "024" "030" "040" "048" "060" "080" "120" "240"
 set bls=002 003 004 006 008 010 012 016 020 024 030 040 048 060 080 120 240
 
 REM STEP 0 GPS
